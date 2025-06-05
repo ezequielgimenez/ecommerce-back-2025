@@ -21,22 +21,7 @@ export async function createSinglePreference(product, user) {
         },
       ],
       payer: {
-        name: user.name,
-        surname: user.surname,
         email: user.email,
-        phone: {
-          area_code: user.phone.area_code,
-          number: user.phone.number,
-        },
-        identification: {
-          type: "DNI",
-          number: user.identification.number,
-        },
-        address: {
-          zip_code: user.address.cod_postal,
-          street_name: user.address.name,
-          street_number: user.address.number,
-        },
       },
       // URL de redirección en los distintos casos
       back_urls: {

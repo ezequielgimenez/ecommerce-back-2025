@@ -17,5 +17,9 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
         message: error.message,
       });
     }
+  } else {
+    return res
+      .status(405)
+      .json({ success: false, message: "Método no permitido" });
   }
 }
