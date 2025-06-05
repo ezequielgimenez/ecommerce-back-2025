@@ -16,5 +16,5 @@ export async function transaction(req: NextApiRequest, res: NextApiResponse) {
 }
 
 export default method({
-  post: transaction,
+  post: (req: NextApiRequest, res: NextApiResponse) => transaction(req, res),
 });
