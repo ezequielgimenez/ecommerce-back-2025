@@ -1,13 +1,36 @@
-import { MercadoPagoConfig, Preference, MerchantOrder } from "mercadopago";
+import { MercadoPagoConfig, Preference, Payment } from "mercadopago";
 
 const client = new MercadoPagoConfig({
   accessToken: process.env.MERCADO_PAGO_TOKEN,
 });
 
 const preference = new Preference(client);
-const merchantOrder = new MerchantOrder(client);
+const payment = new Payment(client);
 
-export async function createSinglePreference(product, user) {
+export type myObjectData = {
+  product: {
+    objectID: string;
+    name: string;
+    description: string;
+  };
+  user: {
+    email: string;
+    name: string;
+    surname: string;
+    address: {
+      street_name: string;
+      street_number: number;
+    };
+  };
+  transaction: {
+    id: string;
+    status: string;
+    productId: string;
+  };
+};
+
+export async function createSinglePreference(data: myObjectData) {
+  const { product, user, transaction } = data;
   return await preference.create({
     body: {
       items: [
@@ -17,7 +40,7 @@ export async function createSinglePreference(product, user) {
           description: product.description,
           quantity: 1,
           currency_id: "ARS",
-          unit_price: product.price,
+          unit_price: 5,
         },
       ],
       payer: {
@@ -31,14 +54,13 @@ export async function createSinglePreference(product, user) {
       },
       // Esto puede ser el id o algún otro identificador
       // que te ayude a vincular este pago con el producto más adelante
-      external_reference: user.id,
+      external_reference: transaction.id,
       notification_url:
-        "https://webhook.site/4d3b832c-8853-48b1-9f38-02003a34b8ed",
+        "https://webhook.site/02813db2-b7c7-4137-a00c-ab163fd3eb0f",
     },
   });
 }
 
-export async function getMerchantOrder(id) {
-  const result = await merchantOrder.get(id);
-  return result;
+export async function getPaymentById(id: string) {
+  return payment.get({ id });
 }

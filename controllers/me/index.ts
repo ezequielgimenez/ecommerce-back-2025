@@ -1,31 +1,36 @@
-import { NextApiRequest, NextApiResponse } from "next";
-import parseBearerToken from "parse-bearer-token";
+import { findOneUserByPk, updateUserById } from "services/user.services";
 import { decodeToken } from "lib/generateToken";
-import { User } from "models/user";
+import { cookies } from "next/headers";
+import { NextResponse } from "next/server";
+import { getAllTransactions } from "services/transation.services";
 
 export function getMeMiddleware(callback) {
-  return function getDecode(req: NextApiRequest, res: NextApiResponse) {
-    const tokenReq = parseBearerToken(req);
-    if (tokenReq) {
-      const data = decodeToken(tokenReq);
+  return async function getDecode(req: Request) {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("auth_token").value;
+
+    if (token) {
+      const data = decodeToken(token);
       if (data) {
-        callback(req, res, data);
+        return callback(req, data);
       } else {
-        return res
-          .status(401)
-          .json({ success: false, message: "Token invalido" });
+        return NextResponse.json(
+          { success: false, message: "Token invalido" },
+          { status: 401 }
+        );
       }
     } else {
-      return res
-        .status(404)
-        .json({ success: false, message: "No hay un token" });
+      return NextResponse.json(
+        { success: false, message: "No hay un token en el headers" },
+        { status: 404 }
+      );
     }
   };
 }
 
 export async function getMeController(data) {
   const { userId } = data;
-  const user = await User.findByPk(userId);
+  const user = await findOneUserByPk(userId);
   if (user) {
     return {
       success: true,
@@ -37,5 +42,31 @@ export async function getMeController(data) {
       success: false,
       message: "User no encontrado por el id proporcionado",
     };
+  }
+}
+
+export async function getAllMeTransactions(userId) {
+  const productsPaid = await getAllTransactions(userId);
+  if (productsPaid.length > 0) {
+    return {
+      sucess: true,
+      message: "Tus compras realizadas",
+      data: productsPaid,
+    };
+  } else {
+    return {
+      success: false,
+      message: "Aún no tenes compras realizadas",
+    };
+  }
+}
+
+export async function updateUserController(data) {
+  const { id } = data;
+  const [user] = await updateUserById(data, id);
+  if (user === 1) {
+    return { success: true, message: "Usuario actualizado" };
+  } else {
+    return { success: false, message: "No se pudo actualizar el user" };
   }
 }

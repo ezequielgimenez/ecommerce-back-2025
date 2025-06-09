@@ -1,26 +1,34 @@
-import { algolia } from "connections";
+import { createTransaction } from "services/transation.services";
+import { findOneUserByEmail } from "services/user.services";
 import { createSinglePreference } from "lib/mercadopago";
-import { Transaction } from "models/transaction";
-import { User } from "models/user";
+import { getProductById } from "services/product.services";
 
-export async function createTransaction(req) {
-  const { productId, email } = req;
-  const user = await User.findOne({ where: { email } });
+import { myObjectData } from "lib/mercadopago";
 
-  if (user && productId) {
-    await Transaction.create({ status: "pending", userId: user.get("id") });
+export async function createTransactionController(
+  productId: string,
+  email: string
+) {
+  const user = await findOneUserByEmail(email);
+  if (user) {
+    const status = "pending";
+    const userId = user.get("id").toString();
+    const transaction = await createTransaction(status, userId, productId);
+    const productById = await getProductById(productId);
+    const product = JSON.parse(JSON.stringify(productById));
 
-    const product = await algolia.getObject({
-      indexName: "products",
-      objectID: productId,
-    });
-    if (product) {
-      const data = await createSinglePreference(product, user);
-      return { success: true, message: "Preferencia creada", data };
-    } else {
-      return { success: false, message: "Producto no encontrado" };
-    }
+    const data: myObjectData = {
+      user: user.toJSON(),
+      product,
+      transaction: transaction.toJSON(),
+    };
+    const prefence = await createSinglePreference(data);
+    return {
+      success: true,
+      message: "Transaccion creada",
+      data: prefence.init_point,
+    };
   } else {
-    return { success: false, message: "No hay user o productId" };
+    return { success: false, message: "Email de usuario no encontrado" };
   }
 }
