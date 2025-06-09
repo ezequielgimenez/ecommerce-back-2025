@@ -5,7 +5,7 @@ const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN || "*";
 export function withCORS(response: Response) {
   const res = new NextResponse(response.body, response);
 
-  res.headers.set("Access-Control-Allow-Origin", ALLOWED_ORIGIN);
+  res.headers.set("Access-Control-Allow-Origin", "*");
   res.headers.set("Access-Control-Allow-Credentials", "true");
   res.headers.set("Access-Control-Allow-Methods", "GET,DELETE,PATCH,POST,PUT");
   res.headers.set(
@@ -19,7 +19,7 @@ export function withCORS(response: Response) {
 export function handleOptions() {
   const res = new NextResponse(null, { status: 204 });
 
-  res.headers.set("Access-Control-Allow-Origin", ALLOWED_ORIGIN);
+  res.headers.set("Access-Control-Allow-Origin", "*");
   res.headers.set("Access-Control-Allow-Credentials", "true");
   res.headers.set("Access-Control-Allow-Methods", "GET,DELETE,PATCH,POST,PUT");
   res.headers.set(
