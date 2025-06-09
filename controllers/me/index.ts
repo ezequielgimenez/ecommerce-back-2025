@@ -3,6 +3,7 @@ import { decodeToken } from "lib/generateToken";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { getAllTransactions } from "services/transation.services";
+import { withCORS } from "lib/with.cors";
 
 export function getMeMiddleware(callback) {
   return async function getDecode(req: Request) {
@@ -12,18 +13,21 @@ export function getMeMiddleware(callback) {
     if (token) {
       const data = decodeToken(token);
       if (data) {
-        return callback(req, data);
+        const res = await callback(req, data);
+        return withCORS(res);
       } else {
-        return NextResponse.json(
+        const res = NextResponse.json(
           { success: false, message: "Token invalido" },
           { status: 401 }
         );
+        return withCORS(res);
       }
     } else {
-      return NextResponse.json(
+      const res = NextResponse.json(
         { success: false, message: "No hay un token en el headers" },
         { status: 404 }
       );
+      return withCORS(res);
     }
   };
 }
