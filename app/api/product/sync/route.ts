@@ -3,7 +3,10 @@ import { NextResponse } from "next/server";
 import { withCORS, handleOptions } from "lib/with.cors";
 
 export async function POST(req: Request) {
-  const result = await syncAllProductsController();
+  const body = await req.json();
+  const { destacados } = body;
+
+  const result = await syncAllProductsController(destacados);
   if (!result.success) {
     const res = NextResponse.json(result, { status: 500 });
     return withCORS(res);

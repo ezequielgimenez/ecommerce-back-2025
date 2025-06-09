@@ -7,7 +7,7 @@ import {
 import { withCORS, handleOptions } from "lib/with.cors";
 import { NextResponse } from "next/server";
 
-export async function getHandler(req: Request, data) {
+async function getHandler(req: Request, data) {
   try {
     const result = await getMeController(data);
     if (!result.success) {

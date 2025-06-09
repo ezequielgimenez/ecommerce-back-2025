@@ -4,10 +4,22 @@ import {
   syncAllProducts,
 } from "services/product.services";
 
-export async function syncAllProductsController() {
+export async function syncAllProductsController(productsDest: boolean) {
   try {
     const productsSync = await syncAllProducts();
-    return { success: true, message: "sincronizado", data: productsSync };
+    if (productsDest) {
+      const productsDestacados = productsSync.filter(
+        (i) => i.dest === "producto destacado"
+      );
+      return {
+        success: true,
+        message: "sincronizado",
+        data: productsSync,
+        destacados: productsDestacados,
+      };
+    } else {
+      return { success: true, message: "sincronizado", data: productsSync };
+    }
   } catch (error) {
     return { success: false, message: error.message };
   }
