@@ -2,11 +2,8 @@ import { getProductByIdController } from "controllers/products";
 import { NextResponse } from "next/server";
 import { withCORS, handleOptions } from "lib/with.cors";
 
-export async function GET(
-  req: Request,
-  { params }: { params: { id: string } }
-) {
-  const { id } = params;
+export async function GET(req: Request, context: any) {
+  const { id } = context.params;
   try {
     const result = await getProductByIdController(id);
     if (!result.success) {
