@@ -10,7 +10,8 @@ export async function POST(req: Request) {
       const res = NextResponse.json(result, { status: 400 });
       return withCORS(res);
     } else {
-      return NextResponse.json(result, { status: 201 });
+      const res = NextResponse.json(result, { status: 201 });
+      return withCORS(res);
     }
   } catch (error) {
     const res = NextResponse.json(

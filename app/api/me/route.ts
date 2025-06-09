@@ -14,7 +14,8 @@ async function getHandler(req: Request, data) {
       const res = NextResponse.json(result, { status: 404 });
       return withCORS(res);
     } else {
-      return NextResponse.json(result, { status: 201 });
+      const res = NextResponse.json(result, { status: 201 });
+      return withCORS(res);
     }
   } catch (error) {
     const res = NextResponse.json(
