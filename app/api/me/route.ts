@@ -4,6 +4,9 @@
 //   updateUserController,
 // } from "controllers/me";
 
+import { withCORS } from "lib/with.cors";
+import { NextResponse } from "next/server";
+
 // import { withCORS, handleOptions } from "lib/with.cors";
 // import { NextResponse } from "next/server";
 
@@ -51,3 +54,8 @@
 // export function OPTIONS() {
 //   return handleOptions();
 // }
+
+export function GET(req: Request) {
+  const res = NextResponse.json("Todo ok");
+  return withCORS(res);
+}
