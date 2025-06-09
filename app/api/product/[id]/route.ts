@@ -2,7 +2,13 @@ import { getProductByIdController } from "controllers/products";
 import { NextResponse } from "next/server";
 import { withCORS, handleOptions } from "lib/with.cors";
 
-export async function GET(req: Request, context: { params: { id: string } }) {
+type Context = {
+  params: {
+    id: string;
+  };
+};
+
+export async function GET(req: Request, context: Context) {
   const { id } = context.params;
   try {
     const result = await getProductByIdController(id);
